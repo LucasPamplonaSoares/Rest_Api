@@ -4,11 +4,17 @@ import json
 app = Flask(__name__)
 
 desenvolvedores = [
-    {'nome': 'Lucas',
-     'habilidade': ['Python', 'Flask']}
+    {'id': 0,
+     'nome': 'Lucas',
+     'habilidade': ['Python', 'Flask']
+     },
+    {'id': 1,
+     'nome': 'Soares',
+     'habilidade': ['Java', 'PHP']}
 ]
 
 
+# Devolve o desenvolvedor pelo ID, também altera e deleta um desenvolvedor
 @app.route('/dev/<int:id>/', methods=['GET', 'PUT', 'DELETE'])  # PUT para alterar
 def desenvolvedor(id):
     if request.method == 'GET':
@@ -19,7 +25,7 @@ def desenvolvedor(id):
             response = {'status': 'erro', 'mensagem': mensagem}
         except Exception:
             mensagem = 'Erro desconhecido. Proceuro o Administrador da API'
-            response =
+            response = {'status': 'erro', 'mensagem': mensagem}
         return jsonify(response)
     elif request.method == 'PUT':
         dados = json.load(request.data)
@@ -28,6 +34,19 @@ def desenvolvedor(id):
     elif request.method == 'DELETE':
         desenvolvedores.pop(id)
         return jsonify({'status': 'sucesso', 'messagem': 'Registro excluido'})
+
+
+# Lista todos os desenvolvedores e permite registrar um novo desenvolvedor
+@app.route('/dev/', methods=['POST', 'GET'])
+def lista_desenvolvedores():
+    if request.method == 'POST':
+        dados = json.load(request.data)
+        posicao = len(desenvolvedores)
+        dados['id'] = posicao
+        desenvolvedores.append(dados)
+        return jsonify(desenvolvedores[posicao])
+    elif request.method == 'GET':
+        return  jsonify(desenvolvedores)
 
 
 if __name__ == '__main__':
